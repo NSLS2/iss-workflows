@@ -32,8 +32,8 @@ deployments:
         volumes:
           - /nsls2/data/iss/proposals:/nsls2/data/iss/proposals
           - /nsls2/data3/iss/proposals:/nsls2/data3/iss/proposals
-          - /nsls2/data/iss/legacy:/nsls2/data/iss/legacy    # To be removed after data security work is completed
-          - /nsls2/data3/iss/legacy:/nsls2/data3/iss/legacy    # To be removed after data security work is completed
+          - /nsls2/data/iss/legacy:/nsls2/data/iss/legacy # To be removed after data security work is completed
+          - /nsls2/data3/iss/legacy:/nsls2/data3/iss/legacy # To be removed after data security work is completed
           - /nsls2/software/etc/tiled:/nsls2/software/etc/tiled
         container_create_kwargs:
           userns_mode: "keep-id:uid=402955,gid=402955" # workflow-iss:workflow-iss

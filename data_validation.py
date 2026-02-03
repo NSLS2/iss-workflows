@@ -4,11 +4,9 @@ from prefect import flow, task, get_run_logger
 from prefect.blocks.system import Secret
 from tiled.client import from_profile
 
-BEAMLINE_OR_ENDSTATION = "!!! Set the endstation or beamline_TLA here !!!"
-
 
 @task(retries=2, retry_delay_seconds=10)
-def read_all_streams(uid, beamline_acronym=BEAMLINE_OR_ENDSTATION):
+def read_all_streams(uid, beamline_acronym="iss"):
     logger = get_run_logger()
     api_key = Secret.load(f"tiled-{beamline_acronym}-api-key", _sync=True).get()
     tiled_client = from_profile("nsls2", api_key=api_key)
@@ -27,5 +25,5 @@ def read_all_streams(uid, beamline_acronym=BEAMLINE_OR_ENDSTATION):
 
 
 @flow(log_prints=True)
-def data_validation(uid):
-    read_all_streams(uid)
+def data_validation(uid, beamline_acronym="iss"):
+    read_all_streams(uid, beamline_acronym=beamline_acronym)

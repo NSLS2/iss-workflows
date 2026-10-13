@@ -4,10 +4,10 @@ from prefect import task, flow, get_run_logger
 from prefect.blocks.notifications import SlackWebhook
 from prefect.context import FlowRunContext
 from prefect.settings import PREFECT_UI_URL
-from data_validation import get_run_migration
+from data_validation import get_run, data_validation
 from dotenv import load_dotenv
 
-CATALOG_NAME = "tla"
+CATALOG_NAME = "iss"
 
 
 def slack(func):
@@ -27,15 +27,14 @@ def slack(func):
         # Load slack credentials that are saved in Prefect.
         mon_prefect = SlackWebhook.load("mon-prefect")
         mon_bluesky = SlackWebhook.load("mon-bluesky")
-        mon_prefect_tla = SlackWebhook.load("mon-prefect-tla")
-        mon_prefect_program = SlackWebhook.load("mon-prefect-program")
+        mon_prefect_tla = SlackWebhook.load("mon-prefect-iss")
+        mon_prefect_program = SlackWebhook.load("mon-prefect-spec")
 
         # Get the uid.
         uid = stop_doc["run_start"]
 
         # Get the scan_id.
-        # run = get_run(uid, api_key=api_key)  # use this if Mongo
-        run = get_run_migration(uid, api_key=api_key)
+        run = get_run(uid, api_key=api_key)
         scan_id = run.start["scan_id"]
 
         # Send a message to mon-bluesky if bluesky-run failed.
@@ -80,10 +79,6 @@ def log_completion(dry_run=False):
 def end_of_run_workflow(stop_doc, api_key=None, dry_run=False):
     load_dotenv()
     uid = stop_doc["run_start"]
-    # data_validation(uid, api_key=api_key, dry_run=dry_run) # Use this line if the Mongo database-backed run
-    run = get_run_migration(
-        uid, api_key=api_key
-    )  # Use this line if SQL database-backed run
-    run.validate(raise_on_error=True)  # Only for SQL database-backed run
+    data_validation(uid, api_key=api_key, dry_run=dry_run)
     log_completion(dry_run=dry_run)
     return True
